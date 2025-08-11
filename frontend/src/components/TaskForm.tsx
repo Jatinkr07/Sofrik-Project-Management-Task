@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
@@ -13,10 +13,13 @@ interface TaskFormProps {
 }
 
 const schema = yup.object({
-  title: yup.string().required(),
-  description: yup.string(),
-  status: yup.string().oneOf(["todo", "in-progress", "done"]).required(),
-  dueDate: yup.string().required(),
+  title: yup.string().required("Title is required"),
+  description: yup.string().optional(),
+  status: yup
+    .string()
+    .oneOf(["todo", "in-progress", "done"])
+    .required("Status is required"),
+  dueDate: yup.string().required("Due date is required"),
 });
 
 interface FormData {
@@ -28,6 +31,7 @@ interface FormData {
 
 function TaskForm({ projectId, onSubmitSuccess, task }: TaskFormProps) {
   const { token } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -42,7 +46,7 @@ function TaskForm({ projectId, onSubmitSuccess, task }: TaskFormProps) {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       if (task) {
         await axios.put(`${API_URL}/api/tasks/${projectId}/${task._id}`, data, {
@@ -67,6 +71,7 @@ function TaskForm({ projectId, onSubmitSuccess, task }: TaskFormProps) {
       <h2 className="text-2xl font-bold mb-4">
         {task ? "Edit Task" : "Create Task"}
       </h2>
+
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Title</label>
         <input {...register("title")} className="w-full p-2 border rounded" />
@@ -74,6 +79,7 @@ function TaskForm({ projectId, onSubmitSuccess, task }: TaskFormProps) {
           <p className="text-red-500 text-sm">{errors.title.message}</p>
         )}
       </div>
+
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Description</label>
         <textarea
@@ -81,6 +87,7 @@ function TaskForm({ projectId, onSubmitSuccess, task }: TaskFormProps) {
           className="w-full p-2 border rounded"
         />
       </div>
+
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Status</label>
         <select {...register("status")} className="w-full p-2 border rounded">
@@ -88,7 +95,11 @@ function TaskForm({ projectId, onSubmitSuccess, task }: TaskFormProps) {
           <option value="in-progress">In Progress</option>
           <option value="done">Done</option>
         </select>
+        {errors.status && (
+          <p className="text-red-500 text-sm">{errors.status.message}</p>
+        )}
       </div>
+
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Due Date</label>
         <input
@@ -100,6 +111,7 @@ function TaskForm({ projectId, onSubmitSuccess, task }: TaskFormProps) {
           <p className="text-red-500 text-sm">{errors.dueDate.message}</p>
         )}
       </div>
+
       <button
         type="submit"
         className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
