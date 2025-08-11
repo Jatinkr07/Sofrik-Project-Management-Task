@@ -3,7 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { API_URL } from "../utils/api";
+import type { Task } from "../types";
 
 interface TaskFormProps {
   projectId: string;
@@ -20,7 +20,7 @@ const schema = yup.object({
 
 interface FormData {
   title: string;
-  description: string;
+  description?: string;
   status: "todo" | "in-progress" | "done";
   dueDate: string;
 }
@@ -44,11 +44,15 @@ function TaskForm({ projectId, onSubmitSuccess, task }: TaskFormProps) {
   const onSubmit = async (data: FormData) => {
     try {
       if (task) {
-        await axios.put(`${API_URL}/api/tasks/${projectId}/${task._id}`, data, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.put(
+          `http://localhost:5000/api/tasks/${projectId}/${task._id}`,
+          data,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
       } else {
-        await axios.post(`${API_URL}/api/tasks/${projectId}`, data, {
+        await axios.post(`http://localhost:5000/api/tasks/${projectId}`, data, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

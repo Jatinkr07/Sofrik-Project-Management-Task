@@ -3,15 +3,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import type { Project } from "../types";
 import { API_URL } from "../utils/api";
 
 interface ProjectFormProps {
   onSubmitSuccess: () => void;
-  project?: {
-    title: string;
-    description: string;
-    status: "active" | "completed";
-  };
+  project?: Project;
 }
 
 const schema = yup.object({
@@ -22,7 +19,7 @@ const schema = yup.object({
 
 interface FormData {
   title: string;
-  description: string;
+  description?: string;
   status: "active" | "completed";
 }
 
