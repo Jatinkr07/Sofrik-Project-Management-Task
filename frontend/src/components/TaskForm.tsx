@@ -4,6 +4,7 @@ import * as yup from "yup";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import type { Task } from "../types";
+import { API_URL } from "../utils/api";
 
 interface TaskFormProps {
   projectId: string;
@@ -44,15 +45,11 @@ function TaskForm({ projectId, onSubmitSuccess, task }: TaskFormProps) {
   const onSubmit = async (data: FormData) => {
     try {
       if (task) {
-        await axios.put(
-          `http://localhost:5000/api/tasks/${projectId}/${task._id}`,
-          data,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        await axios.put(`${API_URL}/api/tasks/${projectId}/${task._id}`, data, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
       } else {
-        await axios.post(`http://localhost:5000/api/tasks/${projectId}`, data, {
+        await axios.post(`${API_URL}/api/tasks/${projectId}`, data, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
